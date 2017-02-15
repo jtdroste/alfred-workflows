@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>im.droste.james.ubwhois</string>
+	<key>connections</key>
+	<dict>
+		<key>DE5715D0-A64F-40CA-B5FE-B54AC59A466E</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9206A6F9-E692-438B-90D6-8AB84B50BE2F</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>James Droste</string>
+	<key>description</key>
+	<string></string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>UB whois</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>keyword</key>
+				<string>ubwho</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<false/>
+				<key>queuedelaymode</key>
+				<integer>1</integer>
+				<key>queuemode</key>
+				<integer>2</integer>
+				<key>runningsubtext</key>
+				<string>Loading...</string>
+				<key>script</key>
+				<string>&lt;?php
+$LDAP_HOST = "ldap.buffalo.edu";
+$LDAP_PORT = 389;
+$LDAP_BASE = "o=university at buffalo,c=us";
+$FILTER    = "(|(userid=%s)(sn=%s)(cn=*%s*))";
+
+$ds     = ldap_connect($LDAP_HOST, $LDAP_PORT) or die('Unable to connect to '.$LDAP_HOST.':'.$LDAP_PORT);
+$search = @ldap_search($ds, $LDAP_BASE, sprintf($FILTER, $argv[1], $argv[1], $argv[1]));
+$info   = ldap_get_entries($ds, $search);
+
+if ( $info['count'] &lt; 1 ) {
+	die(json_encode(['items' =&gt; []]));
+}
+
+// Remove count
+unset($info['count']);
+
+// Now let's iterate over the info
+$output = ['items' =&gt; []];
+
+foreach ( $info AS $data ) {
+	// Check if we found an exact match
+	if ( $data['uid'][0] == $argv[1] ) {
+		die(json_encode([
+			'items' =&gt; [[
+				'uid' =&gt; $data['uid'][0],
+				'arg' =&gt; $data['uid'][0],
+				'title' =&gt; $data['cn'][0],
+				'subtitle' =&gt; $data['title'][0],
+			]],
+		]));
+	}
+
+	if ( count($output['items']) &lt;= 20 ) {
+		$output['items'][] = [
+			'uid' =&gt; $data['uid'][0],
+			'arg' =&gt; $data['uid'][0],
+			'title' =&gt; $data['cn'][0],
+			'subtitle' =&gt; $data['title'][0],
+		];
+	}
+}
+
+echo json_encode($output);</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Lookup information on a ubit</string>
+				<key>title</key>
+				<string>UB whois</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>DE5715D0-A64F-40CA-B5FE-B54AC59A466E</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>http://www.buffalo.edu/directory/user/{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>9206A6F9-E692-438B-90D6-8AB84B50BE2F</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>DE5715D0-A64F-40CA-B5FE-B54AC59A466E</key>
+		<dict>
+			<key>xpos</key>
+			<integer>280</integer>
+			<key>ypos</key>
+			<integer>330</integer>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>https://james.droste.im</string>
+</dict>
+</plist>

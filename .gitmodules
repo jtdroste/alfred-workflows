@@ -1,0 +1,3 @@
+[submodule "BluetoothConnect/BluetoothConnector"]
+	path = BluetoothConnect/BluetoothConnector
+	url = https://github.com/lapfelix/BluetoothConnector.git
