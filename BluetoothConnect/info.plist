@@ -60,7 +60,7 @@ import StringIO
 import sys
 
 BT_BIN = "/Users/james/.bin/BluetoothConnector"
-MAC_REGEX = r"^(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})) - (.*)"
+MAC_REGEX = r"^(([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})) - (.*) - (.*)"
 
 def get_devices(binary=BT_BIN):
 	try:
@@ -78,7 +78,8 @@ def parse_help(data):
 			continue
 
 		matches.append({
-			'name': match.group(4),
+			'name': match.group(5),
+			'connected': match.group(4) == 'true',
 			'addr': match.group(1)
 		})
 
@@ -92,10 +93,14 @@ def generate_output(data, search=None):
 		if search and not (search.upper() in device['name'].upper()):
 			continue
 
+		title = device['name']
+		if device['connected']:
+			title += " (Connected)"
+
 		out['items'].append({
 			'uid': device['addr'],
 			'arg': device['addr'],
-			'title': device['name'],
+			'title': title,
 			'subtitle': device['addr'],
 		})
 
